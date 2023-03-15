@@ -15,22 +15,27 @@ function handleInput(err, result) {
 	const { data, secret } = result
 
 	if (err) { return onErr(err); }
+
 	console.log('Data to encrypt: ' + data);
 
-	// generate an appropriate key from the secret - 24 bytes long as a 'buffer'
-	const key = scryptSync(secret, '', 24)
-	console.log('Generated key: ' + key.toString('hex').match(/../g).join(' '));
+	// generate a 24 byte key from the secret
+	const key = scryptSync(secret, '', 24) // hashing function
+	console.log('Generated key (buffer):')
+	console.log(key)
 
-	// generate an 'initiation value' - 16 random bytes, can be sent unencrypted with cipherText 
+	// generate an 'initiation value' - 16 random bytes, must be sent unencrypted alongside encrypted data
 	// adds randomness, ensures messages with same plaintext + same password will have different encrypted values
-	const iv = randomBytes(16);
-	console.log('Generated iv: ' + iv.toString('hex').match(/../g).join(' '));
+	const iv = randomBytes(16)
+	console.log('Generated iv (buffer):')
+	console.log(iv)
 
+	// create cipher and produce encrypted data
 	let cipher = createCipheriv(algorithm, key, iv);
 	let encrypted = cipher.update(data, 'utf8', 'hex')
 	encrypted += cipher.final('hex');
-	console.log('Encrypted data: ' + encrypted);
+	console.log(` ******** \n Encrypted data: ${encrypted} \n ivString: ${iv.toString('hex')} \n ********`);
 	}
+
 	function onErr(err) {
 	console.log(err);
 	return 1;
