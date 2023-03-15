@@ -20,6 +20,10 @@ function handleInput(err, result) {
 
 	if (err) { return onErr(err); }
 
+	// look for username in the database
+    const user = users.find(u => u.username === username)
+    if (user) { return onErr('username already exists')}
+
 	// generate a salt to add to our hash
     const salt = randomBytes(16).toString('base64')
     console.log(`salt: ${salt}`)
